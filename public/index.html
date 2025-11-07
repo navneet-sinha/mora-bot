@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mora WhatsApp Sender</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css" />
+    <style>
+      .hidden { display: none; }
+      #response pre { max-width: 100%; overflow-x: auto; }
+    </style>
   </head>
   <body>
     <!-- Minimal UI for sending a WhatsApp message via the backend API. -->
     <main>
       <h1>Mora WhatsApp Sender</h1>
-      <p>Enter a recipient phone number in international format and a message.</p>
+      <p>Enter a recipient phone number in international format and choose whether to send a simple text or a template message.</p>
       <form id="send-form">
         <label for="phoneNumber">Phone Number</label>
         <input
@@ -22,14 +26,35 @@
           maxlength="16"
         />
 
-        <label for="message">Message</label>
-        <textarea
-          id="message"
-          name="message"
-          placeholder="Type your WhatsApp message"
-          required
-          rows="4"
-        ></textarea>
+        <label for="messageType">Message Type</label>
+        <select id="messageType" name="type">
+          <option value="text">Text</option>
+          <option value="template">Template</option>
+        </select>
+
+        <div id="text-fields">
+          <label for="message">Message</label>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Type your WhatsApp message"
+            required
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div id="template-fields" class="hidden">
+          <p>
+            Template sends use the pre-approved template configured on the server. Provide comma-separated values for body placeholders (if any).
+          </p>
+          <label for="templateParams">Template Parameters</label>
+          <textarea
+            id="templateParams"
+            name="templateParams"
+            placeholder="param1, param2, param3"
+            rows="3"
+          ></textarea>
+        </div>
 
         <button type="submit">Send Message</button>
       </form>

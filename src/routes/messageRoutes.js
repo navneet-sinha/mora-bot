@@ -9,6 +9,7 @@ const { assertWhatsappConfig } = require('../config');
  */
 function createMessageRouter(config) {
   const router = express.Router();
+  const whatsappClient = createWhatsappService(config.whatsapp);
 
   router.post('/', async (req, res, next) => {
     const { errors, value } = validateMessagePayload(req.body);
@@ -17,9 +18,23 @@ function createMessageRouter(config) {
     }
 
     try {
-      assertWhatsappConfig(config);
-      const whatsappClient = createWhatsappService(config.whatsapp);
-      const data = await whatsappClient.sendTextMessage(value);
+      assertWhatsappConfig(config, {
+        requireTemplate: value.type === 'template',
+      });
+
+      let data;
+      if (value.type === 'template') {
+        data = await whatsappClient.sendTemplateMessage({
+          phoneNumber: value.phoneNumber,
+          templateParams: value.templateParams,
+        });
+      } else {
+        data = await whatsappClient.sendTextMessage({
+          phoneNumber: value.phoneNumber,
+          message: value.message,
+        });
+      }
+
       return res.json({ success: true, data });
     } catch (error) {
       return next(error);

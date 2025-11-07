@@ -8,6 +8,7 @@ This project is a compact WhatsApp Cloud API sender that ships with a friendly w
 - A WhatsApp Cloud API account with:
   - Permanent access token
   - Phone number ID
+  - Approved template name (for template sends)
   - API version (for example `v21.0`)
 
 ## Configuration
@@ -19,6 +20,15 @@ This project is a compact WhatsApp Cloud API sender that ships with a friendly w
 cp .env.example .env
 ```
 
+| Variable | Purpose |
+| --- | --- |
+| `WHATSAPP_ACCESS_TOKEN` | Long-lived or system user token used for API calls. |
+| `WHATSAPP_PHONE_NUMBER_ID` | The phone number ID assigned to your WhatsApp Business account. |
+| `WHATSAPP_GRAPH_API_VERSION` | Optional graph version (defaults to `v21.0`). |
+| `WHATSAPP_TEMPLATE_NAME` | Template to send when the UI is set to “Template”. |
+| `WHATSAPP_TEMPLATE_LANGUAGE_CODE` | Language/locale for the template (defaults to `en_US`). |
+| `PORT` | Port for the local Express server (defaults to `3000`). |
+
 ## Local Development
 
 ```bash
@@ -26,7 +36,10 @@ npm install
 npm run dev
 ```
 
-Navigate to `http://localhost:3000`, enter a phone number and message, then press **Send Message**. The UI will display the response JSON that comes back from the WhatsApp Cloud API.
+Navigate to `http://localhost:3000`, enter a phone number, choose **Text** or **Template**, and press **Send Message**. The UI displays the response JSON from the WhatsApp Cloud API so you can check IDs and errors quickly.
+
+- **Text** messages require an active customer session (the contact must have messaged you in the last 24 hours).
+- **Template** messages use the template configured in `.env`. Supply comma-separated parameters if the template body expects them (leave blank if not).
 
 ## Deploying to Heroku
 
@@ -38,7 +51,7 @@ heroku ps:scale web=1
 heroku open
 ```
 
-Heroku reads the `Procfile` and starts the Express server with your environment variables configured on the platform.
+Set the same environment variables on Heroku (e.g., `heroku config:set WHATSAPP_ACCESS_TOKEN=...`).
 
 ## Pushing to GitHub
 
@@ -54,11 +67,11 @@ git push -u origin main
 
 | Path | Description |
 | --- | --- |
-| `public/` | Simple HTML/JS UI that collects the phone number and message, then renders the API response. |
+| `public/` | Simple HTML/JS UI that collects the phone number, message type, and parameters, then renders the API response. |
 | `server.js` | Bootstraps the Express app, serves the UI, and wires routes/error handling. |
 | `src/config.js` | Loads environment variables so secrets stay outside version control. |
 | `src/routes/messageRoutes.js` | Request validation and HTTP response handling for WhatsApp sends. |
-| `src/services/whatsappService.js` | Axios-based WhatsApp Cloud API client. |
-| `src/validators/messageValidator.js` | Ensures inputs contain a phone number and message. |
+| `src/services/whatsappService.js` | Axios-based WhatsApp Cloud API client supporting text and template sends. |
+| `src/validators/messageValidator.js` | Ensures inputs contain a phone number and the appropriate fields for text vs template sends. |
 
 Extend the service, add tests, or plug in persistence as needed—the modular layout should make enhancements straightforward.

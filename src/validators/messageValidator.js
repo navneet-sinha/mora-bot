@@ -3,8 +3,13 @@
  */
 function validateMessagePayload(payload = {}) {
   const errors = [];
-  const rawPhone = typeof payload.phoneNumber === 'string' ? payload.phoneNumber.trim() : '';
-  const rawMessage = typeof payload.message === 'string' ? payload.message.trim() : '';
+
+  const rawPhone =
+    typeof payload.phoneNumber === 'string' ? payload.phoneNumber.trim() : '';
+  const rawType =
+    typeof payload.type === 'string' ? payload.type.trim().toLowerCase() : 'text';
+
+  const messageType = rawType === 'template' ? 'template' : 'text';
 
   if (!rawPhone) {
     errors.push('phoneNumber is required.');
@@ -12,15 +17,37 @@ function validateMessagePayload(payload = {}) {
     errors.push('phoneNumber must contain only digits and may start with a plus sign.');
   }
 
-  if (!rawMessage) {
-    errors.push('message is required.');
+  let message = '';
+  if (messageType === 'text') {
+    message = typeof payload.message === 'string' ? payload.message.trim() : '';
+    if (!message) {
+      errors.push('message is required when sending a text message.');
+    }
+  }
+
+  let templateParams = [];
+  if (messageType === 'template') {
+    if (Array.isArray(payload.templateParams)) {
+      templateParams = payload.templateParams
+        .map((value) => (typeof value === 'string' ? value.trim() : String(value)))
+        .filter(Boolean);
+    } else if (typeof payload.templateParams === 'string') {
+      templateParams = payload.templateParams
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+    } else if (payload.templateParams != null) {
+      errors.push('templateParams must be an array or comma separated string.');
+    }
   }
 
   return {
     errors,
     value: {
       phoneNumber: rawPhone,
-      message: rawMessage,
+      type: messageType,
+      message,
+      templateParams,
     },
   };
 }

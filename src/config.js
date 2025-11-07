@@ -19,6 +19,9 @@ function loadConfig() {
       accessToken: process.env.WHATSAPP_ACCESS_TOKEN,
       phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
       graphApiVersion: process.env.WHATSAPP_GRAPH_API_VERSION ?? 'v21.0',
+      templateName: process.env.WHATSAPP_TEMPLATE_NAME,
+      templateLanguageCode:
+        process.env.WHATSAPP_TEMPLATE_LANGUAGE_CODE ?? 'en_US',
     },
   };
 
@@ -28,11 +31,22 @@ function loadConfig() {
 
 /**
  * Ensures we have the required WhatsApp credentials before attempting to send messages.
+ *
+ * @param {object} config The resolved configuration object.
+ * @param {object} [options]
+ * @param {boolean} [options.requireTemplate] Whether template metadata is required.
  */
-function assertWhatsappConfig(config) {
-  const missingKeys = Object.entries(config.whatsapp)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+function assertWhatsappConfig(config, options = {}) {
+  const { requireTemplate = false } = options;
+
+  const requiredKeys = ['accessToken', 'phoneNumberId'];
+  if (requireTemplate) {
+    requiredKeys.push('templateName', 'templateLanguageCode');
+  }
+
+  const missingKeys = requiredKeys.filter(
+    (key) => !config.whatsapp[key],
+  );
 
   if (missingKeys.length > 0) {
     throw new Error(

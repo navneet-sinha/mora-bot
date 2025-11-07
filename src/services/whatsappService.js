@@ -3,8 +3,18 @@ const axios = require('axios');
 /**
  * Factory that returns a WhatsApp Cloud API client bound to the provided configuration.
  */
-function createWhatsappService({ accessToken, phoneNumberId, graphApiVersion }) {
+function createWhatsappService({
+  accessToken,
+  phoneNumberId,
+  graphApiVersion,
+  templateName,
+  templateLanguageCode,
+}) {
   const apiUrl = `https://graph.facebook.com/${graphApiVersion}/${phoneNumberId}/messages`;
+  const defaultHeaders = {
+    Authorization: `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+  };
 
   async function sendTextMessage({ phoneNumber, message }) {
     const payload = {
@@ -14,18 +24,39 @@ function createWhatsappService({ accessToken, phoneNumberId, graphApiVersion }) 
       text: { body: message },
     };
 
-    const response = await axios.post(apiUrl, payload, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.post(apiUrl, payload, { headers: defaultHeaders });
+    return response.data;
+  }
 
+  async function sendTemplateMessage({ phoneNumber, templateParams }) {
+    const payload = {
+      messaging_product: 'whatsapp',
+      to: phoneNumber,
+      type: 'template',
+      template: {
+        name: templateName,
+        language: {
+          code: templateLanguageCode,
+        },
+      },
+    };
+
+    if (templateParams.length > 0) {
+      payload.template.components = [
+        {
+          type: 'body',
+          parameters: templateParams.map((value) => ({ type: 'text', text: value })),
+        },
+      ];
+    }
+
+    const response = await axios.post(apiUrl, payload, { headers: defaultHeaders });
     return response.data;
   }
 
   return {
     sendTextMessage,
+    sendTemplateMessage,
   };
 }
 
