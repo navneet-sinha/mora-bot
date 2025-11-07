@@ -18,11 +18,20 @@ function validateMessagePayload(payload = {}) {
   }
 
   let message = '';
+  let templateName = '';
+  let templateLanguageCode = '';
   if (messageType === 'text') {
     message = typeof payload.message === 'string' ? payload.message.trim() : '';
     if (!message) {
       errors.push('message is required when sending a text message.');
     }
+  } else {
+    templateName =
+      typeof payload.templateName === 'string' ? payload.templateName.trim() : '';
+    templateLanguageCode =
+      typeof payload.templateLanguageCode === 'string'
+        ? payload.templateLanguageCode.trim()
+        : '';
   }
 
   let templateParams = [];
@@ -48,6 +57,8 @@ function validateMessagePayload(payload = {}) {
       type: messageType,
       message,
       templateParams,
+      templateName,
+      templateLanguageCode,
     },
   };
 }

@@ -28,15 +28,23 @@ function createWhatsappService({
     return response.data;
   }
 
-  async function sendTemplateMessage({ phoneNumber, templateParams }) {
+  async function sendTemplateMessage({
+    phoneNumber,
+    templateParams,
+    templateName: overrideTemplateName,
+    templateLanguageCode: overrideLanguageCode,
+  }) {
+    const resolvedTemplateName = overrideTemplateName || templateName;
+    const resolvedLanguageCode = overrideLanguageCode || templateLanguageCode;
+
     const payload = {
       messaging_product: 'whatsapp',
       to: phoneNumber,
       type: 'template',
       template: {
-        name: templateName,
+        name: resolvedTemplateName,
         language: {
-          code: templateLanguageCode,
+          code: resolvedLanguageCode,
         },
       },
     };

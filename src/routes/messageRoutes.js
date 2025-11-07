@@ -18,17 +18,39 @@ function createMessageRouter(config) {
     }
 
     try {
-      assertWhatsappConfig(config, {
-        requireTemplate: value.type === 'template',
-      });
-
       let data;
       if (value.type === 'template') {
+        const resolvedTemplateName =
+          value.templateName || config.whatsapp.templateName;
+        const resolvedLanguageCode =
+          value.templateLanguageCode || config.whatsapp.templateLanguageCode;
+
+        if (!resolvedTemplateName) {
+          throw new Error(
+            'Template name is required either in configuration or request payload.',
+          );
+        }
+
+        assertWhatsappConfig(
+          {
+            ...config,
+            whatsapp: {
+              ...config.whatsapp,
+              templateName: resolvedTemplateName,
+              templateLanguageCode: resolvedLanguageCode,
+            },
+          },
+          { requireTemplate: true },
+        );
+
         data = await whatsappClient.sendTemplateMessage({
           phoneNumber: value.phoneNumber,
           templateParams: value.templateParams,
+          templateName: resolvedTemplateName,
+          templateLanguageCode: resolvedLanguageCode,
         });
       } else {
+        assertWhatsappConfig(config);
         data = await whatsappClient.sendTextMessage({
           phoneNumber: value.phoneNumber,
           message: value.message,

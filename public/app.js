@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const messageInput = document.getElementById('message');
   const templateFields = document.getElementById('template-fields');
   const templateParamsInput = document.getElementById('templateParams');
+  const templateNameInput = document.getElementById('templateName');
+  const templateLanguageCodeInput = document.getElementById('templateLanguageCode');
 
   function toggleFields() {
     const type = messageTypeSelect.value;
@@ -16,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.toggleAttribute('required', !isTemplate);
 
     templateFields.classList.toggle('hidden', !isTemplate);
-    templateParamsInput.toggleAttribute('required', false);
   }
 
   function renderStatus(type, message, payload) {
@@ -53,9 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (type === 'template') {
-      payload.templateParams = parseTemplateParams(
-        templateParamsInput.value,
-      );
+      const templateName = templateNameInput.value.trim();
+      const templateLanguageCode = templateLanguageCodeInput.value.trim();
+
+      if (templateName) {
+        payload.templateName = templateName;
+      }
+      if (templateLanguageCode) {
+        payload.templateLanguageCode = templateLanguageCode;
+      }
+
+      payload.templateParams = parseTemplateParams(templateParamsInput.value);
     } else {
       payload.message = formData.get('message');
     }

@@ -25,8 +25,8 @@ cp .env.example .env
 | `WHATSAPP_ACCESS_TOKEN` | Long-lived or system user token used for API calls. |
 | `WHATSAPP_PHONE_NUMBER_ID` | The phone number ID assigned to your WhatsApp Business account. |
 | `WHATSAPP_GRAPH_API_VERSION` | Optional graph version (defaults to `v21.0`). |
-| `WHATSAPP_TEMPLATE_NAME` | Template to send when the UI is set to “Template”. |
-| `WHATSAPP_TEMPLATE_LANGUAGE_CODE` | Language/locale for the template (defaults to `en_US`). |
+| `WHATSAPP_TEMPLATE_NAME` | Default template to send when UI is set to “Template”. |
+| `WHATSAPP_TEMPLATE_LANGUAGE_CODE` | Default language/locale for template sends (defaults to `en_US`). |
 | `PORT` | Port for the local Express server (defaults to `3000`). |
 
 ## Local Development
@@ -39,7 +39,7 @@ npm run dev
 Navigate to `http://localhost:3000`, enter a phone number, choose **Text** or **Template**, and press **Send Message**. The UI displays the response JSON from the WhatsApp Cloud API so you can check IDs and errors quickly.
 
 - **Text** messages require an active customer session (the contact must have messaged you in the last 24 hours).
-- **Template** messages use the template configured in `.env`. Supply comma-separated parameters if the template body expects them (leave blank if not).
+- **Template** messages use the defaults from `.env`, but you can override the template name and language in the form if you want to send a different approved template. Supply comma-separated parameters if the template body expects them (leave blank if not).
 
 ## Deploying to Heroku
 
@@ -67,11 +67,11 @@ git push -u origin main
 
 | Path | Description |
 | --- | --- |
-| `public/` | Simple HTML/JS UI that collects the phone number, message type, and parameters, then renders the API response. |
+| `public/` | Simple HTML/JS UI that collects the phone number, message type, overrides, and parameters, then renders the API response. |
 | `server.js` | Bootstraps the Express app, serves the UI, and wires routes/error handling. |
 | `src/config.js` | Loads environment variables so secrets stay outside version control. |
 | `src/routes/messageRoutes.js` | Request validation and HTTP response handling for WhatsApp sends. |
-| `src/services/whatsappService.js` | Axios-based WhatsApp Cloud API client supporting text and template sends. |
+| `src/services/whatsappService.js` | Axios-based WhatsApp Cloud API client supporting text and template sends with overrides. |
 | `src/validators/messageValidator.js` | Ensures inputs contain a phone number and the appropriate fields for text vs template sends. |
 
 Extend the service, add tests, or plug in persistence as needed—the modular layout should make enhancements straightforward.

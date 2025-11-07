@@ -45,8 +45,25 @@
 
         <div id="template-fields" class="hidden">
           <p>
-            Template sends use the pre-approved template configured on the server. Provide comma-separated values for body placeholders (if any).
+            Template sends use the pre-approved template configured on the server, but you can override the name and language if needed.
           </p>
+
+          <label for="templateName">Template Name (optional)</label>
+          <input
+            type="text"
+            id="templateName"
+            name="templateName"
+            placeholder="e.g. order_confirmation"
+          />
+
+          <label for="templateLanguageCode">Template Language Code (optional)</label>
+          <input
+            type="text"
+            id="templateLanguageCode"
+            name="templateLanguageCode"
+            placeholder="e.g. en_US"
+          />
+
           <label for="templateParams">Template Parameters</label>
           <textarea
             id="templateParams"
