@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mora WhatsApp Sender</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css" />
+  </head>
+  <body>
+    <!-- Minimal UI for sending a WhatsApp message via the backend API. -->
+    <main>
+      <h1>Mora WhatsApp Sender</h1>
+      <p>Enter a recipient phone number in international format and a message.</p>
+      <form id="send-form">
+        <label for="phoneNumber">Phone Number</label>
+        <input
+          type="tel"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder="e.g. +15551234567"
+          required
+          maxlength="16"
+        />
+
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Type your WhatsApp message"
+          required
+          rows="4"
+        ></textarea>
+
+        <button type="submit">Send Message</button>
+      </form>
+
+      <section id="response" aria-live="polite"></section>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
