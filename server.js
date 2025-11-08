@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const { loadConfig } = require('./src/config');
 const { createMessageRouter } = require('./src/routes/messageRoutes');
+const { createWebhookRouter } = require('./src/routes/webhookRoutes');
 
 /**
  * Builds an Express application wired with static UI assets and the API router.
@@ -15,8 +16,15 @@ function createApp(config) {
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(publicDir));
 
+  const messageRouter = createMessageRouter(config);
+  const webhookRouter = createWebhookRouter(config);
+
   // API route for sending WhatsApp messages.
-  app.use('/api/messages', createMessageRouter(config));
+  app.use('/api/messages', messageRouter);
+
+  // Webhook endpoints for WhatsApp Cloud API callbacks (verification + inbound messages).
+  app.use('/webhooks/whatsapp', webhookRouter);
+  app.use('/webhook', webhookRouter);
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });

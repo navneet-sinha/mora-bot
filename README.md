@@ -27,6 +27,7 @@ cp .env.example .env
 | `WHATSAPP_GRAPH_API_VERSION` | Optional graph version (defaults to `v21.0`). |
 | `WHATSAPP_TEMPLATE_NAME` | Default template to send when UI is set to “Template”. |
 | `WHATSAPP_TEMPLATE_LANGUAGE_CODE` | Default language/locale for template sends (defaults to `en_US`). |
+| `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | Secret token used to validate the webhook handshake. |
 | `PORT` | Port for the local Express server (defaults to `3000`). |
 
 ## Local Development
@@ -52,6 +53,15 @@ heroku open
 ```
 
 Set the same environment variables on Heroku (e.g., `heroku config:set WHATSAPP_ACCESS_TOKEN=...`).
+
+### Configure the Meta webhook
+
+1. Expose your production URL (e.g., `https://mora-bot-xxxx.herokuapp.com/webhooks/whatsapp` – `/webhook` is also available if you prefer a shorter path).
+2. Set the same `WHATSAPP_WEBHOOK_VERIFY_TOKEN` value in both your `.env`/Heroku config and the “Verify Token” field inside the Meta Developer dashboard.
+3. In **WhatsApp → Configuration**, click **Edit** under “Webhook”.
+4. Enter the Callback URL pointing to `/webhooks/whatsapp` and the verify token you defined.
+5. Subscribe to the webhook fields you need (`messages`, `message_template_status_update`, etc.).
+6. Meta will send a GET request to verify the token, then your Heroku app will log incoming POST payloads (customise the handler to persist or process them).
 
 ## Pushing to GitHub
 

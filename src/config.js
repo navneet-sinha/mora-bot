@@ -22,6 +22,7 @@ function loadConfig() {
       templateName: process.env.WHATSAPP_TEMPLATE_NAME,
       templateLanguageCode:
         process.env.WHATSAPP_TEMPLATE_LANGUAGE_CODE ?? 'en_US',
+      webhookVerifyToken: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN,
     },
   };
 
